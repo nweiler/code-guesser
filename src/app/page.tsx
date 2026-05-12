@@ -152,19 +152,22 @@ export default function Home() {
         })}
       </div>
 
-      <div style={{ height: "3.5rem", display: "flex", alignItems: "center", marginTop: "1rem" }}>
+      <div style={{ height: "4.5rem", display: "flex", alignItems: "center", marginTop: "1rem" }}>
         <button
           onClick={handleNext}
           style={{
-            background: "var(--accent)",
+            background: "linear-gradient(135deg, #58a6ff, #bc8cff)",
+            border: "none",
             color: "white",
-            padding: "0.8rem 2.5rem",
+            padding: "0.8rem 3rem",
             fontSize: "1.1rem",
             fontWeight: "bold",
-            boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
+            borderRadius: "12px",
+            boxShadow: "0 10px 20px rgba(88, 166, 255, 0.2)",
             opacity: guessed ? 1 : 0,
             pointerEvents: guessed ? "auto" : "none",
-            transition: "opacity 0.2s",
+            transform: guessed ? "translateY(0)" : "translateY(10px)",
+            transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
           }}
         >
           Next Challenge →
