@@ -30,6 +30,7 @@ export default function Home() {
   const [historyVersion, setHistoryVersion] = useState(0);
   const [milestone, setMilestone] = useState<number | null>(null);
   const [gameMode, setGameMode] = useState<GameMode>("endless");
+  const [copied, setCopied] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<RepoCategory | null>(null);
 
   const prefetchRef = useRef<Promise<GameRound> | null>(null);
@@ -97,6 +98,12 @@ export default function Home() {
     const prefetched = prefetchRef.current ?? undefined;
     prefetchRef.current = null;
     loadRound({ prefetched, mode: "endless", category: selectedCategory });
+  };
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(shareText);
+    setCopied(true);
+    setTimeout(() => setCopied(false), 2000);
   };
 
   const switchMode = (mode: GameMode) => {
@@ -318,6 +325,24 @@ export default function Home() {
       )}
 
       <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+        <button
+          onClick={handleCopy}
+          style={{
+            background: "transparent",
+            border: "1px solid var(--border)",
+            color: copied ? "var(--success)" : "var(--foreground)",
+            padding: "0.8rem 1.5rem",
+            fontSize: "0.9rem",
+            fontWeight: 500,
+            borderRadius: "12px",
+            opacity: guessed ? 1 : 0,
+            pointerEvents: guessed ? "auto" : "none",
+            transform: guessed ? "translateY(0)" : "translateY(10px)",
+            transition: "all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+          }}
+        >
+          {copied ? "Copied!" : "Copy Results"}
+        </button>
         <button
           onClick={() => {
             window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
