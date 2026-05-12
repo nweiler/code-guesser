@@ -18,7 +18,23 @@ export const metadata: Metadata = {
     siteName: "CodeGuesser",
     locale: "en_US",
     type: "website",
-    images: [{ url: "/og-image.png", width: 1200, height: 630 }],
+    images: [
+      {
+        url: "https://www.codeguesser.xyz/og-image.png?v=2",
+        secureUrl: "https://www.codeguesser.xyz/og-image.png?v=2",
+        width: 1200,
+        height: 630,
+        alt: "CodeGuesser - Identify the GitHub repository from random code snippets",
+        type: "image/png",
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "CodeGuesser",
+    description: "Test your open-source knowledge! Can you guess the GitHub repository from code snippets?",
+    images: ["https://www.codeguesser.xyz/og-image.png?v=2"],
+    creator: "@nweiler",
   },
   icons: {
     icon: "/favicon.svg",

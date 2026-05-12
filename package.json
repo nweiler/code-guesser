@@ -8,9 +8,12 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
-    "generate-rounds": "node scripts/generate-rounds.mjs"
+    "generate-rounds": "node scripts/generate-rounds.mjs",
+    "analytics": "node scripts/fetch-analytics.mjs",
+    "analytics:today": "node scripts/fetch-analytics.mjs today"
   },
   "dependencies": {
+    "@google-analytics/data": "^5.2.2",
     "@next/third-parties": "^16.2.6",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vercel/analytics": "^2.0.1",
