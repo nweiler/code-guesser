@@ -15,7 +15,17 @@ interface PreGeneratedRound {
   language: string;
 }
 
+interface DailyEntry {
+  date: string;
+  owner: string;
+  name: string;
+  snippet: string;
+  fileName: string;
+  language: string;
+}
+
 let _rounds: PreGeneratedRound[] | null = null;
+let _dailies: DailyEntry[] | null = null;
 
 function getRounds(): PreGeneratedRound[] {
   if (!_rounds) {
@@ -27,6 +37,18 @@ function getRounds(): PreGeneratedRound[] {
     }
   }
   return _rounds;
+}
+
+function getDailyEntry(date: string): DailyEntry | undefined {
+  if (!_dailies) {
+    try {
+      const p = path.join(process.cwd(), "src/data/daily.json");
+      _dailies = JSON.parse(fs.readFileSync(p, "utf-8")) as DailyEntry[];
+    } catch {
+      _dailies = [];
+    }
+  }
+  return _dailies.find((d) => d.date === date);
 }
 
 function seededRandom(seed: string): number {
@@ -66,8 +88,13 @@ export async function fetchNewRound(fetchOpts?: FetchOptions): Promise<GameRound
     let round: PreGeneratedRound;
 
     if (mode === "daily") {
-      const seed = new Date().toISOString().slice(0, 10);
-      round = pool[seededRandom(seed) % pool.length];
+      const today = new Date().toISOString().slice(0, 10);
+      const entry = getDailyEntry(today);
+      if (entry) {
+        round = entry;
+      } else {
+        round = pool[seededRandom(today) % pool.length];
+      }
     } else {
       round = pool[Math.floor(Math.random() * pool.length)];
     }

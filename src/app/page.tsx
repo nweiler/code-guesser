@@ -121,18 +121,12 @@ export default function Home() {
   const isDailyDone = gameMode === "daily" && guessed;
 
   const shareText = useMemo(() => {
-    const history = loadHistory();
-    const recent = history.rounds;
-    const lastN = recent.length <= 5 ? recent : recent.slice(-5);
-    const blocks = lastN.map((r) => (r.correct ? "\u2705" : "\u274C")).join("");
-    const correct = lastN.filter((r) => r.correct).length;
-    return (
-      `CodeGuesser ${gameMode === "daily" ? "Daily" : "Endless"}\n` +
-      `${blocks} ${correct}/${lastN.length}\n` +
-      `${stats.currentStreak >= 2 ? `Streak: ${stats.currentStreak}\n` : ""}` +
-      `https://www.codeguesser.xyz`
-    );
-  }, [historyVersion, gameMode, stats.currentStreak]);
+    if (!guessed || !round) return "";
+    const total = stats.roundsPlayed;
+    const correct = Math.round(stats.accuracy * total);
+    const verb = selectedOption === round.correctAnswer ? "aced a round" : "played";
+    return `I just ${verb} on CodeGuesser! Score: ${correct}/${total}. Can you beat me? https://www.codeguesser.xyz`;
+  }, [guessed, round, selectedOption, historyVersion, stats.roundsPlayed, stats.accuracy]);
 
   // Keyboard shortcuts
   useEffect(() => {

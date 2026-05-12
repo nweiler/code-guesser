@@ -190,6 +190,16 @@ async function getRepoFiles(repo) {
   return results;
 }
 
+function seededRandom(seed) {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
+
 async function main() {
   console.log("Generating round cache...\n");
 
@@ -215,9 +225,39 @@ async function main() {
     console.log(`  [${rateLimitRemaining} remaining]`);
   }
 
-  const outputPath = path.join(DATA_DIR, "rounds.json");
-  fs.writeFileSync(outputPath, JSON.stringify(allRounds));
-  console.log(`\nDone. ${allRounds.length} rounds (${ok} repos OK, ${fail} repos failed)\nSaved to ${outputPath}`);
+  const roundsPath = path.join(DATA_DIR, "rounds.json");
+  fs.writeFileSync(roundsPath, JSON.stringify(allRounds));
+  console.log(`\nDone. ${allRounds.length} rounds (${ok} repos OK, ${fail} repos failed)\nSaved to ${roundsPath}`);
+
+  // Generate static daily challenges (only if not yet created)
+  const dailyPath = path.join(DATA_DIR, "daily.json");
+  if (!fs.existsSync(dailyPath) && allRounds.length > 0) {
+    console.log("\nGenerating daily challenges...");
+    const startDate = new Date();
+    const dailies = [];
+
+    for (let i = 0; i < 365; i++) {
+      const date = new Date(startDate);
+      date.setDate(date.getDate() + i);
+      const dateStr = date.toISOString().slice(0, 10);
+      const idx = seededRandom(dateStr) % allRounds.length;
+      const r = allRounds[idx];
+
+      dailies.push({
+        date: dateStr,
+        owner: r.owner,
+        name: r.name,
+        snippet: r.snippet,
+        fileName: r.fileName,
+        language: r.language,
+      });
+    }
+
+    fs.writeFileSync(dailyPath, JSON.stringify(dailies));
+    console.log(`Generated ${dailies.length} daily challenges\nSaved to ${dailyPath}`);
+  } else {
+    console.log(`\nDaily challenges already exist (${fs.existsSync(dailyPath) ? "file present" : "no rounds available"})`);
+  }
 }
 
 main().catch((err) => {
