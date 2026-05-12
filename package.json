@@ -10,6 +10,7 @@
     "test": "vitest run"
   },
   "dependencies": {
+    "@next/third-parties": "^16.2.6",
     "@types/react-syntax-highlighter": "^15.5.13",
     "next": "latest",
     "react": "latest",
