@@ -13,17 +13,12 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
-  const [score, setScore] = useState(0);
-  const [roundsPlayed, setRoundsPlayed] = useState(0);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyVersion, setHistoryVersion] = useState(0);
 
   const prefetchRef = useRef<Promise<GameRound> | null>(null);
 
   useEffect(() => {
-    const stats = computeStats(loadHistory());
-    setScore(Math.round(stats.accuracy * stats.roundsPlayed));
-    setRoundsPlayed(stats.roundsPlayed);
     loadNextRound();
   }, []);
 
@@ -50,8 +45,6 @@ export default function Home() {
 
     const correct = option === round.correctAnswer;
     setSelectedOption(option);
-    if (correct) setScore((s) => s + 1);
-    setRoundsPlayed((p) => p + 1);
 
     saveRound({
       timestamp: Date.now(),
@@ -85,7 +78,7 @@ export default function Home() {
             History
           </button>
           <div style={{ fontSize: "1.2rem", fontWeight: "bold", background: "var(--card-bg)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
-            Score: {score} / {roundsPlayed}
+            Score: {Math.round(stats.accuracy * stats.roundsPlayed)} / {stats.roundsPlayed}
           </div>
         </div>
       </header>
