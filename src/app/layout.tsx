@@ -30,6 +30,10 @@ export const metadata: Metadata = {
     title: "CodeGuesser",
     description: "Identify the GitHub repository from random code snippets.",
   },
+  icons: {
+    icon: "/favicon.svg",
+    apple: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({
