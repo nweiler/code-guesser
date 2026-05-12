@@ -40,3 +40,7 @@ next-env.d.ts
 # Gemini CLI Private Memory
 .gemini/
 conductor/.conductor_backup/
+
+# Claude Code / Superpowers session data
+.claude/
+.superpowers/
