@@ -20,8 +20,8 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.codeguesser.xyz/og-image.png?v=2",
-        secureUrl: "https://www.codeguesser.xyz/og-image.png?v=2",
+        url: "https://www.codeguesser.xyz/og-image.png?v=5",
+        secureUrl: "https://www.codeguesser.xyz/og-image.png?v=5",
         width: 1200,
         height: 630,
         alt: "CodeGuesser - Identify the GitHub repository from random code snippets",
@@ -33,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CodeGuesser",
     description: "Test your open-source knowledge! Can you guess the GitHub repository from code snippets?",
-    images: ["https://www.codeguesser.xyz/og-image.png?v=2"],
+    images: ["https://www.codeguesser.xyz/og-image.png?v=5"],
     creator: "@nweiler",
   },
   icons: {
@@ -52,8 +52,8 @@ export default function RootLayout({
       <body>
         {children}
         <Analytics />
+        <GoogleAnalytics gaId="G-5YDV49WMP4" />
       </body>
-      <GoogleAnalytics gaId="G-5YDV49WMP4" />
     </html>
   );
 }
