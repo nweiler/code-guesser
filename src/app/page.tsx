@@ -1,22 +1,12 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { fetchNewRound } from "./actions";
 import { GameRound } from "@/lib/types";
-
-const STORAGE_KEY = "codeguesser_score";
-
-function loadPersistedScore() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (!raw) return { score: 0, roundsPlayed: 0 };
-    return JSON.parse(raw) as { score: number; roundsPlayed: number };
-  } catch {
-    return { score: 0, roundsPlayed: 0 };
-  }
-}
+import { computeStats, loadHistory, saveRound } from "@/lib/history";
+import HistoryDrawer from "@/components/HistoryDrawer";
 
 export default function Home() {
   const [round, setRound] = useState<GameRound | null>(null);
@@ -25,21 +15,19 @@ export default function Home() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [roundsPlayed, setRoundsPlayed] = useState(0);
+  const [historyOpen, setHistoryOpen] = useState(false);
+  const [historyVersion, setHistoryVersion] = useState(0);
 
   const prefetchRef = useRef<Promise<GameRound> | null>(null);
 
   useEffect(() => {
-    const { score, roundsPlayed } = loadPersistedScore();
-    setScore(score);
-    setRoundsPlayed(roundsPlayed);
+    const stats = computeStats(loadHistory());
+    setScore(Math.round(stats.accuracy * stats.roundsPlayed));
+    setRoundsPlayed(stats.roundsPlayed);
     loadNextRound();
   }, []);
 
-  useEffect(() => {
-    try {
-      localStorage.setItem(STORAGE_KEY, JSON.stringify({ score, roundsPlayed }));
-    } catch {}
-  }, [score, roundsPlayed]);
+  const stats = useMemo(() => computeStats(loadHistory()), [historyVersion]);
 
   const loadNextRound = async (prefetched?: Promise<GameRound>) => {
     setLoading(true);
@@ -60,13 +48,19 @@ export default function Home() {
   const handleGuess = (option: string) => {
     if (selectedOption || !round) return;
 
+    const correct = option === round.correctAnswer;
     setSelectedOption(option);
-    if (option === round.correctAnswer) {
-      setScore((s) => s + 1);
-    }
+    if (correct) setScore((s) => s + 1);
     setRoundsPlayed((p) => p + 1);
 
-    // Start fetching the next round in the background
+    saveRound({
+      timestamp: Date.now(),
+      correctRepo: round.correctAnswer,
+      guessedRepo: option,
+      correct,
+    });
+    setHistoryVersion((v) => v + 1);
+
     prefetchRef.current = fetchNewRound();
   };
 
@@ -83,8 +77,16 @@ export default function Home() {
     <main>
       <header style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
         <h1 style={{ margin: 0 }}>CodeGuesser</h1>
-        <div style={{ fontSize: "1.2rem", fontWeight: "bold", background: "var(--card-bg)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
-          Score: {score} / {roundsPlayed}
+        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+          <button
+            onClick={() => setHistoryOpen(true)}
+            style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+          >
+            History
+          </button>
+          <div style={{ fontSize: "1.2rem", fontWeight: "bold", background: "var(--card-bg)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
+            Score: {score} / {roundsPlayed}
+          </div>
         </div>
       </header>
 
@@ -116,17 +118,8 @@ export default function Home() {
           <SyntaxHighlighter
             language={round?.language || "javascript"}
             style={vscDarkPlus}
-            customStyle={{
-              margin: 0,
-              padding: "1.5rem",
-              fontSize: "0.9rem",
-              background: "transparent",
-            }}
-            codeTagProps={{
-              style: {
-                fontFamily: 'var(--font-fira-code), monospace',
-              },
-            }}
+            customStyle={{ margin: 0, padding: "1.5rem", fontSize: "0.9rem", background: "transparent" }}
+            codeTagProps={{ style: { fontFamily: "var(--font-fira-code), monospace" } }}
           >
             {round?.snippet || ""}
           </SyntaxHighlighter>
@@ -149,7 +142,6 @@ export default function Home() {
             if (option === round.correctAnswer) className = "correct";
             else if (option === selectedOption) className = "incorrect";
           }
-
           return (
             <button
               key={option}
@@ -185,6 +177,12 @@ export default function Home() {
       <footer style={{ marginTop: "auto", padding: "2rem", opacity: 0.5, fontSize: "0.8rem", textAlign: "center" }}>
         <p>Built with Next.js & GitHub API</p>
       </footer>
+
+      <HistoryDrawer
+        open={historyOpen}
+        stats={stats}
+        onClose={() => setHistoryOpen(false)}
+      />
     </main>
   );
 }
