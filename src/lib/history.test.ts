@@ -23,6 +23,11 @@ describe("loadHistory", () => {
     localStorage.setItem("codeguesser_history", "not-json{{{");
     expect(loadHistory()).toEqual({ rounds: [], bestStreak: 0 });
   });
+
+  it("returns empty history when stored data has wrong shape", () => {
+    localStorage.setItem("codeguesser_history", "null");
+    expect(loadHistory()).toEqual({ rounds: [], bestStreak: 0 });
+  });
 });
 
 describe("saveRound", () => {

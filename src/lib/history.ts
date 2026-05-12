@@ -7,7 +7,9 @@ export function loadHistory(): GameHistory {
   try {
     const raw = localStorage.getItem(HISTORY_KEY);
     if (!raw) return { rounds: [], bestStreak: 0 };
-    return JSON.parse(raw) as GameHistory;
+    const parsed = JSON.parse(raw);
+    if (!parsed || !Array.isArray(parsed.rounds)) return { rounds: [], bestStreak: 0 };
+    return parsed as GameHistory;
   } catch {
     return { rounds: [], bestStreak: 0 };
   }
