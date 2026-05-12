@@ -13,3 +13,30 @@ export class RateLimitError extends Error {
     this.resetAt = resetAt;
   }
 }
+
+export interface RoundResult {
+  timestamp: number;
+  correctRepo: string;
+  guessedRepo: string;
+  correct: boolean;
+}
+
+export interface GameHistory {
+  rounds: RoundResult[];
+  bestStreak: number;
+}
+
+export interface RepoStat {
+  repo: string;
+  correct: number;
+  total: number;
+  accuracy: number;
+}
+
+export interface GameStats {
+  accuracy: number;
+  currentStreak: number;
+  bestStreak: number;
+  roundsPlayed: number;
+  repoStats: RepoStat[];
+}
