@@ -216,8 +216,8 @@ export default function Home() {
 
       <p style={{ opacity: 0.8, marginBottom: "1rem", fontSize: "1.1rem", textAlign: "center", maxWidth: "600px" }}>
         {gameMode === "daily"
-          ? "Today\u2019s challenge. One snippet, one shot. Come back tomorrow for a new one."
-          : <>Test your knowledge of the open-source world! We&apos;ll show you a random snippet of code from a popular GitHub repository. Your mission: <strong>identify which repository it belongs to</strong>.</>
+          ? "One snippet a day. Make it count."
+          : <>Name that repo. We show code, you guess the project.</>
         }
       </p>
 
