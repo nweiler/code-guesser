@@ -67,7 +67,7 @@ export default function Home() {
             }}
             codeTagProps={{
               style: {
-                fontFamily: '"Fira Code", "JetBrains Mono", monospace',
+                fontFamily: 'var(--font-fira-code), monospace',
               },
             }}
           >
@@ -76,9 +76,13 @@ export default function Home() {
         )}
       </div>
 
-      <div style={{ marginBottom: "1.5rem", width: "100%", display: "flex", justifyContent: "space-between", color: "var(--foreground)", opacity: 0.7, fontSize: "0.9rem" }}>
-        <span>{round && !loading && `File: ${round.fileName}`}</span>
-        <span>{round && !loading && `Language: ${round.language}`}</span>
+      <div style={{ height: "1.5rem", marginBottom: "1.5rem", width: "100%", display: "flex", justifyContent: "space-between", color: "var(--foreground)", opacity: 0.7, fontSize: "0.9rem" }}>
+        {selectedOption && round && !loading && (
+          <>
+            <span>File: {round.fileName}</span>
+            <span>Language: {round.language}</span>
+          </>
+        )}
       </div>
 
       <div className="options-grid">
