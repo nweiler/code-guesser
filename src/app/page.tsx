@@ -68,7 +68,7 @@ export default function Home() {
 
   return (
     <main>
-      <header style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "2rem" }}>
+      <header style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
         <h1 style={{ margin: 0 }}>CodeGuesser</h1>
         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
           <button
@@ -82,6 +82,10 @@ export default function Home() {
           </div>
         </div>
       </header>
+
+      <p style={{ opacity: 0.8, marginBottom: "2rem", fontSize: "1.1rem", textAlign: "center", maxWidth: "600px" }}>
+        Test your knowledge of the open-source world! We&apos;ll show you a random snippet of code from a popular GitHub repository. Your mission: <strong>identify which repository it belongs to</strong>.
+      </p>
 
       <div className="code-container" style={{ padding: 0 }}>
         {loading ? (
