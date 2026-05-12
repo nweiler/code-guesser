@@ -4,7 +4,13 @@ export interface GameRound {
   correctAnswer: string;
   fileName: string;
   language: string;
+  description: string;
+  category: string;
 }
+
+export type GameMode = "endless" | "daily";
+
+export type RepoCategory = "frontend" | "backend" | "ai-ml" | "languages" | "databases" | "devtools" | "mobile" | "data";
 
 export class RateLimitError extends Error {
   resetAt: string;

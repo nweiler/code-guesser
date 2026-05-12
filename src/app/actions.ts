@@ -3,7 +3,7 @@
 import fs from "fs";
 import path from "path";
 import repositories from "@/data/repositories.json";
-import { GameRound, RateLimitError } from "@/lib/types";
+import { GameMode, GameRound, RateLimitError, RepoCategory } from "@/lib/types";
 import { sanitizeSnippet, detectLanguage } from "@/lib/sanitize";
 import { getGitHubContent, getRandomFileFromRepo } from "@/lib/github";
 
@@ -29,18 +29,57 @@ function getRounds(): PreGeneratedRound[] {
   return _rounds;
 }
 
-export async function fetchNewRound(): Promise<GameRound> {
-  const rounds = getRounds();
+function seededRandom(seed: string): number {
+  let hash = 0;
+  for (let i = 0; i < seed.length; i++) {
+    const char = seed.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash |= 0;
+  }
+  return Math.abs(hash);
+}
 
-  // Pre-generated rounds: pick randomly from cache (zero API calls)
-  if (rounds.length > 0) {
-    const round = rounds[Math.floor(Math.random() * rounds.length)];
+interface FetchOptions {
+  mode?: GameMode;
+  category?: RepoCategory | null;
+}
+
+export async function fetchNewRound(fetchOpts?: FetchOptions): Promise<GameRound> {
+  const rounds = getRounds();
+  const mode = fetchOpts?.mode ?? "endless";
+  const category = fetchOpts?.category ?? null;
+
+  // Filter rounds by category if specified
+  let pool = rounds;
+  if (category) {
+    const repoIds = new Set(
+      repositories.filter((r) => r.category === category).map((r) => `${r.owner}/${r.name}`)
+    );
+    pool = rounds.filter((r) => repoIds.has(`${r.owner}/${r.name}`));
+  }
+
+  // Fallback to unfiltered if category has no rounds
+  if (pool.length === 0) pool = rounds;
+
+  // Pre-generated rounds cache
+  if (pool.length > 0) {
+    let round: PreGeneratedRound;
+
+    if (mode === "daily") {
+      const seed = new Date().toISOString().slice(0, 10);
+      round = pool[seededRandom(seed) % pool.length];
+    } else {
+      round = pool[Math.floor(Math.random() * pool.length)];
+    }
 
     const repo = repositories.find((r) => r.owner === round.owner && r.name === round.name);
     const correctAnswer = `${round.owner}/${round.name}`;
 
     const distractors = repositories
-      .filter((r) => r.owner !== round.owner || r.name !== round.name)
+      .filter((r) => {
+        if (!category) return r.owner !== round.owner || r.name !== round.name;
+        return r.category === category && (r.owner !== round.owner || r.name !== round.name);
+      })
       .sort(() => 0.5 - Math.random())
       .slice(0, 3)
       .map((r) => `${r.owner}/${r.name}`);
@@ -53,11 +92,18 @@ export async function fetchNewRound(): Promise<GameRound> {
       correctAnswer,
       fileName: round.fileName,
       language: round.language,
+      description: repo?.description ?? "",
+      category: repo?.category ?? "",
     };
   }
 
-  // Fallback: live API (for dev environments where rounds.json hasn't been generated)
-  const correctRepo = repositories[Math.floor(Math.random() * repositories.length)];
+  // Fallback: live API (dev environments without rounds.json)
+  const repoPool = category
+    ? repositories.filter((r) => r.category === category)
+    : repositories;
+
+  const fallbackRepos = repoPool.length > 0 ? repoPool : repositories;
+  const correctRepo = fallbackRepos[Math.floor(Math.random() * fallbackRepos.length)];
 
   let filePath: string;
   let snippet: string;
@@ -75,7 +121,7 @@ export async function fetchNewRound(): Promise<GameRound> {
   snippet = sanitizeSnippet(snippet);
   const language = detectLanguage(filePath);
 
-  const distractors = repositories
+  const distractors = fallbackRepos
     .filter((r) => r.id !== correctRepo.id)
     .sort(() => 0.5 - Math.random())
     .slice(0, 3)
@@ -90,5 +136,7 @@ export async function fetchNewRound(): Promise<GameRound> {
     correctAnswer,
     fileName: filePath,
     language,
+    description: correctRepo.description ?? "",
+    category: correctRepo.category ?? "",
   };
 }
