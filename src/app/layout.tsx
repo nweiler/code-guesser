@@ -7,6 +7,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
 const firaCode = Fira_Code({ subsets: ["latin"], variable: "--font-fira-code" });
 
 export const metadata: Metadata = {
+  metadataBase: new URL("https://code-guesser.vercel.app"),
   title: "CodeGuesser",
   description: "Test your open-source knowledge! Can you guess the GitHub repository from code snippets?",
   openGraph: {
