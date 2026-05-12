@@ -7,6 +7,7 @@ import { fetchNewRound } from "./actions";
 import { GameRound } from "@/lib/types";
 import { computeStats, loadHistory, saveRound } from "@/lib/history";
 import HistoryDrawer from "@/components/HistoryDrawer";
+import confetti from "canvas-confetti";
 
 export default function Home() {
   const [round, setRound] = useState<GameRound | null>(null);
@@ -15,6 +16,7 @@ export default function Home() {
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [historyOpen, setHistoryOpen] = useState(false);
   const [historyVersion, setHistoryVersion] = useState(0);
+  const [milestone, setMilestone] = useState<number | null>(null);
 
   const prefetchRef = useRef<Promise<GameRound> | null>(null);
 
@@ -54,6 +56,15 @@ export default function Home() {
     });
     setHistoryVersion((v) => v + 1);
 
+    if (correct) {
+      const s = computeStats(loadHistory()).currentStreak;
+      if (s >= 5 && s % 5 === 0) {
+        setMilestone(s);
+        confetti({ particleCount: 100, spread: 70, origin: { y: 0.6 } });
+        setTimeout(() => setMilestone(null), 3000);
+      }
+    }
+
     prefetchRef.current = fetchNewRound();
   };
 
@@ -70,13 +81,21 @@ export default function Home() {
     <main>
       <header style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
         <h1 style={{ margin: 0 }}>CodeGuesser</h1>
-        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          <button
-            onClick={() => setHistoryOpen(true)}
-            style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
-          >
-            History
-          </button>
+          <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+            <a
+              href="https://github.com/nweiler"
+              target="_blank"
+              rel="noopener noreferrer"
+              style={{ fontSize: "0.8rem", opacity: 0.5, textDecoration: "none", color: "var(--foreground)", whiteSpace: "nowrap" }}
+            >
+              Made by @nweiler
+            </a>
+            <button
+              onClick={() => setHistoryOpen(true)}
+              style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            >
+              History
+            </button>
           <div style={{ fontSize: "1.2rem", fontWeight: "bold", background: "var(--card-bg)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
             Score: {Math.round(stats.accuracy * stats.roundsPlayed)} / {stats.roundsPlayed}
           </div>
@@ -152,7 +171,28 @@ export default function Home() {
         })}
       </div>
 
-      <div style={{ height: "4.5rem", display: "flex", alignItems: "center", marginTop: "1rem" }}>
+      <div style={{ display: "flex", alignItems: "center", justifyContent: "center", gap: "1rem", marginTop: "1rem" }}>
+        <button
+          onClick={() => {
+            const text = `I just ${selectedOption === round?.correctAnswer ? "aced a round" : "played"} on CodeGuesser! Score: ${Math.round(stats.accuracy * stats.roundsPlayed)}/${stats.roundsPlayed}. Can you beat me? https://www.codeguesser.xyz`;
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}`, "_blank", "noopener,noreferrer");
+          }}
+          style={{
+            background: "transparent",
+            border: "1px solid var(--border)",
+            color: "var(--foreground)",
+            padding: "0.8rem 1.5rem",
+            fontSize: "0.9rem",
+            fontWeight: 500,
+            borderRadius: "12px",
+            opacity: guessed ? 1 : 0,
+            pointerEvents: guessed ? "auto" : "none",
+            transform: guessed ? "translateY(0)" : "translateY(10px)",
+            transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
+          }}
+        >
+          Share on 𝕏
+        </button>
         <button
           onClick={handleNext}
           style={{
@@ -174,6 +214,12 @@ export default function Home() {
         </button>
       </div>
 
+      {milestone && (
+        <div style={{ textAlign: "center", marginTop: "0.5rem", fontWeight: "bold", color: "var(--accent)" }}>
+          🎉 {milestone} in a row! You&apos;re crushing it!
+        </div>
+      )}
+
       <footer style={{ marginTop: "auto", padding: "2rem", opacity: 0.5, fontSize: "0.8rem", textAlign: "center" }}>
         <p>Built with Next.js & GitHub API</p>
         <p style={{ marginTop: "0.5rem" }}>
@@ -184,6 +230,15 @@ export default function Home() {
             style={{ color: "var(--foreground)", textDecoration: "none" }}
           >
             View on GitHub
+          </a>
+          {" · "}
+          <a 
+            href="https://github.com/nweiler/code-guesser/issues/new" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: "var(--foreground)", textDecoration: "none" }}
+          >
+            Suggest a repo
           </a>
         </p>
       </footer>
