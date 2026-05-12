@@ -55,12 +55,13 @@ export async function getRandomFileFromRepo(owner: string, repo: string) {
   const repoData = await repoResponse.json();
   const defaultBranch = repoData.default_branch;
 
-  // File tree is stable — cache for 1 hour
+  // File tree can be HUGE (e.g. Flutter, VS Code).
+  // Next.js data cache has a 2MB limit per item. We disable caching here to avoid errors.
   const treeResponse = await fetch(
     `${GITHUB_API_BASE}/repos/${owner}/${repo}/git/trees/${defaultBranch}?recursive=1`,
     {
       headers: authHeaders("application/vnd.github.v3+json"),
-      next: { revalidate: 3600 },
+      cache: "no-store",
     }
   );
 
