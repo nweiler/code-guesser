@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { fetchNewRound } from "./actions";
+import { fetchNewRound } from "@/app/actions";
 import { GameMode, GameRound, RepoCategory } from "@/lib/types";
 import { computeStats, loadHistory, saveRound } from "@/lib/history";
 import HistoryDrawer from "@/components/HistoryDrawer";
