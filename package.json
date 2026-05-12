@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "next lint",
-    "test": "vitest run"
+    "test": "vitest run",
+    "generate-rounds": "node scripts/generate-rounds.mjs"
   },
   "dependencies": {
     "@next/third-parties": "^16.2.6",

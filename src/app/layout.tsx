@@ -16,20 +16,8 @@ export const metadata: Metadata = {
     description: "Identify the GitHub repository from random code snippets.",
     url: "https://www.codeguesser.xyz",
     siteName: "CodeGuesser",
-    images: [
-      {
-        url: "/og-image.png", // Recommended to add this file to public/ later
-        width: 1200,
-        height: 630,
-      },
-    ],
     locale: "en_US",
     type: "website",
-  },
-  twitter: {
-    card: "summary_large_image",
-    title: "CodeGuesser",
-    description: "Identify the GitHub repository from random code snippets.",
   },
   icons: {
     icon: "/favicon.svg",
