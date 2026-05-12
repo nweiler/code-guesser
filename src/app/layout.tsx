@@ -1,3 +1,5 @@
+import { Analytics } from "@vercel/analytics/react";
+import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
 import "./globals.css";
@@ -18,8 +20,8 @@ export const metadata: Metadata = {
     type: "website",
     images: [
       {
-        url: "https://www.codeguesser.xyz/og-image.png?v=6",
-        secureUrl: "https://www.codeguesser.xyz/og-image.png?v=6",
+        url: "https://www.codeguesser.xyz/og-image.png?v=7",
+        secureUrl: "https://www.codeguesser.xyz/og-image.png?v=7",
         width: 1200,
         height: 630,
         alt: "CodeGuesser - Identify the GitHub repository from random code snippets",
@@ -31,7 +33,7 @@ export const metadata: Metadata = {
     card: "summary_large_image",
     title: "CodeGuesser",
     description: "Test your open-source knowledge! Can you guess the GitHub repository from code snippets?",
-    images: ["https://www.codeguesser.xyz/og-image.png?v=6"],
+    images: ["https://www.codeguesser.xyz/og-image.png?v=7"],
     creator: "@nweiler",
   },
   icons: {
@@ -50,6 +52,8 @@ export default function RootLayout({
       <head />
       <body>
         {children}
+        <Analytics />
+        <GoogleAnalytics gaId="G-5YDV49WMP4" />
       </body>
     </html>
   );
