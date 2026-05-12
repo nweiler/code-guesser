@@ -25,16 +25,21 @@ body {
   overflow-x: hidden;
 }
 
-/* Subtle animated background */
+/* More prominent animated background */
 body::before {
   content: "";
   position: fixed;
-  top: -50%;
-  left: -50%;
-  width: 200%;
-  height: 200%;
-  background: radial-gradient(circle at 50% 50%, rgba(88, 166, 255, 0.05) 0%, transparent 50%);
-  animation: drift 20s infinite linear;
+  top: -100%;
+  left: -100%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(
+    circle at 50% 50%, 
+    rgba(88, 166, 255, 0.12) 0%, 
+    rgba(188, 140, 255, 0.08) 25%,
+    transparent 60%
+  );
+  animation: drift 30s infinite linear;
   z-index: -1;
   pointer-events: none;
 }
