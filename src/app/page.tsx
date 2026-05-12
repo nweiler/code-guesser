@@ -176,6 +176,16 @@ export default function Home() {
 
       <footer style={{ marginTop: "auto", padding: "2rem", opacity: 0.5, fontSize: "0.8rem", textAlign: "center" }}>
         <p>Built with Next.js & GitHub API</p>
+        <p style={{ marginTop: "0.5rem" }}>
+          <a 
+            href="https://github.com/nweiler/code-guesser" 
+            target="_blank" 
+            rel="noopener noreferrer"
+            style={{ color: "var(--foreground)", textDecoration: "none" }}
+          >
+            View on GitHub
+          </a>
+        </p>
       </footer>
 
       <HistoryDrawer
