@@ -1,4 +1,5 @@
 import { GameHistory, GameStats, RoundResult } from "./types";
+import repositories from "@/data/repositories.json";
 
 const HISTORY_KEY = "codeguesser_history";
 const MAX_ROUNDS = 200;
@@ -28,6 +29,10 @@ export function saveRound(result: RoundResult): void {
   } catch {}
 }
 
+const repoToCategory = new Map<string, string>(
+  repositories.map((r) => [`${r.owner}/${r.name}`, r.category])
+);
+
 export function computeStats(history: GameHistory): GameStats {
   const { rounds, bestStreak } = history;
   const roundsPlayed = rounds.length;
@@ -41,11 +46,19 @@ export function computeStats(history: GameHistory): GameStats {
   }
 
   const repoMap = new Map<string, { correct: number; total: number }>();
+  const catMap = new Map<string, { correct: number; total: number }>();
   for (const round of rounds) {
-    const entry = repoMap.get(round.correctRepo) ?? { correct: 0, total: 0 };
+    const repoEntry = repoMap.get(round.correctRepo) ?? { correct: 0, total: 0 };
     repoMap.set(round.correctRepo, {
-      correct: entry.correct + (round.correct ? 1 : 0),
-      total: entry.total + 1,
+      correct: repoEntry.correct + (round.correct ? 1 : 0),
+      total: repoEntry.total + 1,
+    });
+
+    const category = repoToCategory.get(round.correctRepo) ?? "unknown";
+    const catEntry = catMap.get(category) ?? { correct: 0, total: 0 };
+    catMap.set(category, {
+      correct: catEntry.correct + (round.correct ? 1 : 0),
+      total: catEntry.total + 1,
     });
   }
 
@@ -58,12 +71,22 @@ export function computeStats(history: GameHistory): GameStats {
     }))
     .sort((a, b) => a.accuracy - b.accuracy);
 
+  const categoryStats = Array.from(catMap.entries())
+    .map(([category, { correct, total }]) => ({
+      category,
+      correct,
+      total,
+      accuracy: correct / total,
+    }))
+    .sort((a, b) => a.accuracy - b.accuracy);
+
   return {
     accuracy,
     currentStreak,
     bestStreak: Math.max(bestStreak, currentStreak),
     roundsPlayed,
     repoStats,
+    categoryStats,
   };
 }
 

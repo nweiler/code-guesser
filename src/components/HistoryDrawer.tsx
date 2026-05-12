@@ -59,6 +59,24 @@ export default function HistoryDrawer({ open, stats, onClose }: Props) {
 
             <div className="history-divider" />
 
+            <div className="history-section-label">Category accuracy</div>
+            {stats.categoryStats.map(({ category, accuracy, total }) => (
+              <div key={category} className="history-repo-row">
+                <span className="history-repo-name" title={`${total} round${total !== 1 ? "s" : ""}`}>
+                  {category}
+                </span>
+                <div className="history-bar-wrap">
+                  <div
+                    className={`history-bar ${accuracy >= 0.5 ? "history-bar--good" : "history-bar--bad"}`}
+                    style={{ width: `${Math.round(accuracy * 100)}%` }}
+                  />
+                </div>
+                <span className="history-repo-pct">{Math.round(accuracy * 100)}%</span>
+              </div>
+            ))}
+
+            <div className="history-divider" />
+
             <div className="history-section-label">Repo accuracy</div>
             {stats.repoStats.map(({ repo, accuracy, total }) => (
               <div key={repo} className="history-repo-row">

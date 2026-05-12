@@ -39,10 +39,18 @@ export interface RepoStat {
   accuracy: number;
 }
 
+export interface CategoryStat {
+  category: string;
+  correct: number;
+  total: number;
+  accuracy: number;
+}
+
 export interface GameStats {
   accuracy: number;
   currentStreak: number;
   bestStreak: number;
   roundsPlayed: number;
   repoStats: RepoStat[];
+  categoryStats: CategoryStat[];
 }
