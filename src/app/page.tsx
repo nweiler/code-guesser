@@ -1,44 +1,83 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
-import { fetchNewRound, GameRound } from "./actions";
+import { fetchNewRound } from "./actions";
+import { GameRound } from "@/lib/types";
+
+const STORAGE_KEY = "codeguesser_score";
+
+function loadPersistedScore() {
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (!raw) return { score: 0, roundsPlayed: 0 };
+    return JSON.parse(raw) as { score: number; roundsPlayed: number };
+  } catch {
+    return { score: 0, roundsPlayed: 0 };
+  }
+}
 
 export default function Home() {
   const [round, setRound] = useState<GameRound | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
   const [selectedOption, setSelectedOption] = useState<string | null>(null);
   const [score, setScore] = useState(0);
   const [roundsPlayed, setRoundsPlayed] = useState(0);
 
-  const loadNextRound = async () => {
+  const prefetchRef = useRef<Promise<GameRound> | null>(null);
+
+  useEffect(() => {
+    const { score, roundsPlayed } = loadPersistedScore();
+    setScore(score);
+    setRoundsPlayed(roundsPlayed);
+    loadNextRound();
+  }, []);
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify({ score, roundsPlayed }));
+    } catch {}
+  }, [score, roundsPlayed]);
+
+  const loadNextRound = async (prefetched?: Promise<GameRound>) => {
     setLoading(true);
     setSelectedOption(null);
+    setError(null);
     try {
-      const newRound = await fetchNewRound();
+      const newRound = await (prefetched ?? fetchNewRound());
+      prefetchRef.current = null;
       setRound(newRound);
-    } catch (error) {
-      console.error("Failed to fetch round:", error);
-      alert("Error fetching snippet. Check console or try again.");
+    } catch (err) {
+      const msg = err instanceof Error ? err.message : "Couldn't load a snippet. Try again.";
+      setError(msg);
     } finally {
       setLoading(false);
     }
   };
 
-  useEffect(() => {
-    loadNextRound();
-  }, []);
-
   const handleGuess = (option: string) => {
     if (selectedOption || !round) return;
 
     setSelectedOption(option);
-    setRoundsPlayed((p) => p + 1);
     if (option === round.correctAnswer) {
       setScore((s) => s + 1);
     }
+    setRoundsPlayed((p) => p + 1);
+
+    // Start fetching the next round in the background
+    prefetchRef.current = fetchNewRound();
   };
+
+  const handleNext = () => {
+    const prefetched = prefetchRef.current ?? undefined;
+    prefetchRef.current = null;
+    loadNextRound(prefetched);
+  };
+
+  const guessed = !!selectedOption;
+  const isRateLimit = error?.startsWith("Rate limited");
 
   return (
     <main>
@@ -49,11 +88,29 @@ export default function Home() {
         </div>
       </header>
 
-      <div className="code-container" style={{ padding: 0, overflow: "hidden" }}>
+      <div className="code-container" style={{ padding: 0 }}>
         {loading ? (
-          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "400px", flexDirection: "column", gap: "1rem" }}>
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", minHeight: "200px", flexDirection: "column", gap: "1rem" }}>
             <div className="spinner"></div>
             <p>Scanning GitHub for secrets...</p>
+          </div>
+        ) : error ? (
+          <div style={{ display: "flex", justifyContent: "center", alignItems: "center", height: "100%", minHeight: "200px", flexDirection: "column", gap: "1rem", padding: "1.5rem", textAlign: "center" }}>
+            {isRateLimit ? (
+              <>
+                <p style={{ fontSize: "2rem" }}>⏳</p>
+                <p style={{ color: "var(--foreground)", fontWeight: "bold" }}>{error}</p>
+                <p style={{ opacity: 0.6, fontSize: "0.9rem" }}>
+                  GitHub limits unauthenticated requests. Set a{" "}
+                  <code>GITHUB_TOKEN</code> env var to get 5,000 requests/hour.
+                </p>
+              </>
+            ) : (
+              <>
+                <p style={{ color: "var(--error)" }}>{error}</p>
+                <button onClick={() => loadNextRound()} style={{ color: "var(--foreground)" }}>Try Again</button>
+              </>
+            )}
           </div>
         ) : (
           <SyntaxHighlighter
@@ -76,8 +133,8 @@ export default function Home() {
         )}
       </div>
 
-      <div style={{ height: "1.5rem", marginBottom: "1.5rem", width: "100%", display: "flex", justifyContent: "space-between", color: "var(--foreground)", opacity: 0.7, fontSize: "0.9rem" }}>
-        {selectedOption && round && !loading && (
+      <div style={{ height: "1.5rem", marginBottom: "1rem", width: "100%", display: "flex", justifyContent: "space-between", color: "var(--foreground)", opacity: 0.7, fontSize: "0.9rem" }}>
+        {guessed && round && !loading && (
           <>
             <span>File: {round.fileName}</span>
             <span>Language: {round.language}</span>
@@ -98,7 +155,7 @@ export default function Home() {
               key={option}
               className={className}
               onClick={() => handleGuess(option)}
-              disabled={!!selectedOption || loading}
+              disabled={guessed || loading}
             >
               {option}
             </button>
@@ -106,29 +163,27 @@ export default function Home() {
         })}
       </div>
 
-      <div style={{ height: "100px", display: "flex", alignItems: "center", marginTop: "1rem" }}>
-        {selectedOption && (
-          <button
-            onClick={loadNextRound}
-            style={{ 
-              background: "var(--accent)", 
-              color: "white", 
-              padding: "0.8rem 2.5rem", 
-              fontSize: "1.1rem",
-              fontWeight: "bold",
-              boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)"
-            }}
-          >
-            Next Challenge →
-          </button>
-        )}
+      <div style={{ height: "3.5rem", display: "flex", alignItems: "center", marginTop: "1rem" }}>
+        <button
+          onClick={handleNext}
+          style={{
+            background: "var(--accent)",
+            color: "white",
+            padding: "0.8rem 2.5rem",
+            fontSize: "1.1rem",
+            fontWeight: "bold",
+            boxShadow: "0 4px 14px 0 rgba(88, 166, 255, 0.39)",
+            opacity: guessed ? 1 : 0,
+            pointerEvents: guessed ? "auto" : "none",
+            transition: "opacity 0.2s",
+          }}
+        >
+          Next Challenge →
+        </button>
       </div>
 
       <footer style={{ marginTop: "auto", padding: "2rem", opacity: 0.5, fontSize: "0.8rem", textAlign: "center" }}>
         <p>Built with Next.js & GitHub API</p>
-        <p style={{ marginTop: "0.5rem" }}>
-          Tip: Set <code>GITHUB_TOKEN</code> in your environment to avoid rate limits.
-        </p>
       </footer>
     </main>
   );

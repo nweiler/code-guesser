@@ -2,45 +2,44 @@
 
 import repositories from "@/data/repositories.json";
 import { getGitHubContent, getRandomFileFromRepo } from "@/lib/github";
-
-export interface GameRound {
-  snippet: string;
-  options: string[];
-  correctAnswer: string;
-  fileName: string;
-  language: string;
-}
+import { GameRound, RateLimitError } from "@/lib/types";
 
 export async function fetchNewRound(): Promise<GameRound> {
   // 1. Pick a random repository
   const correctRepo = repositories[Math.floor(Math.random() * repositories.length)];
-  
+
   // 2. Fetch a random file and its content
-  const filePath = await getRandomFileFromRepo(correctRepo.owner, correctRepo.name);
-  let snippet = await getGitHubContent(correctRepo.owner, correctRepo.name, filePath);
+  let filePath: string;
+  let snippet: string;
+  try {
+    filePath = await getRandomFileFromRepo(correctRepo.owner, correctRepo.name);
+    snippet = await getGitHubContent(correctRepo.owner, correctRepo.name, filePath);
+  } catch (err) {
+    if (err instanceof Error && err.message.startsWith("RATE_LIMIT:")) {
+      const resetAt = err.message.slice("RATE_LIMIT:".length);
+      throw new RateLimitError(resetAt);
+    }
+    throw err;
+  }
 
   // 3. Sanitize snippet (remove "gimmes")
   let lines = snippet.split("\n");
-  
-  // Remove shebang
+
   if (lines[0]?.startsWith("#!")) lines.shift();
 
-  // Filter out imports, includes, and requires (common giveaways)
-  // This is a heuristic approach covering multiple languages
   const giveawayPatterns = [
-    /^\s*import\s+/,            // JS, TS, Python, Java, Go, Rust
-    /^\s*from\s+.*\s+import\s+/, // Python
-    /^\s*#include\s+/,          // C, C++
-    /^\s*require\s*\(+/,        // JS, Ruby
-    /^\s*using\s+/,             // C#, C++
-    /^\s*package\s+/,           // Java, Go
-    /^\s*extern\s+crate\s+/,    // Rust
-    /^\s*mod\s+/,               // Rust
+    /^\s*import\s+/,
+    /^\s*from\s+.*\s+import\s+/,
+    /^\s*#include\s+/,
+    /^\s*require\s*\(+/,
+    /^\s*using\s+/,
+    /^\s*package\s+/,
+    /^\s*extern\s+crate\s+/,
+    /^\s*mod\s+/,
   ];
 
   lines = lines.filter(line => !giveawayPatterns.some(pattern => pattern.test(line)));
 
-  // Remove top-level block comments (often containing license/project names)
   let resultLines: string[] = [];
   let inBlockComment = false;
   for (const line of lines) {
@@ -54,7 +53,6 @@ export async function fetchNewRound(): Promise<GameRound> {
       if (trimmed.endsWith("*/")) inBlockComment = false;
       continue;
     }
-    // Also skip single line comments at the top
     if (resultLines.length === 0 && (trimmed.startsWith("//") || trimmed.startsWith("#"))) {
       continue;
     }
@@ -90,7 +88,7 @@ export async function fetchNewRound(): Promise<GameRound> {
   };
   const language = langMap[extension] || "text";
 
-  // 5. Generate distractors
+  // 6. Generate distractors
   const distractors = repositories
     .filter((r) => r.id !== correctRepo.id)
     .sort(() => 0.5 - Math.random())
