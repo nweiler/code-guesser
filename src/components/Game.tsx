@@ -101,7 +101,7 @@ export default function Game() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(shareText);
+    navigator.clipboard.writeText(resultUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -120,12 +120,20 @@ export default function Game() {
   const isRateLimit = error?.startsWith("Rate limited");
   const isDailyDone = gameMode === "daily" && guessed;
 
+  const resultUrl = useMemo(() => {
+    if (!guessed || !round) return "";
+    const total = stats.roundsPlayed;
+    const correct = Math.round(stats.accuracy * total);
+    const streak = stats.currentStreak;
+    return `https://www.codeguesser.xyz/result?score=${correct}&total=${total}&streak=${streak}`;
+  }, [guessed, round, stats.roundsPlayed, stats.accuracy, stats.currentStreak]);
+
   const shareText = useMemo(() => {
     if (!guessed || !round) return "";
     const total = stats.roundsPlayed;
     const correct = Math.round(stats.accuracy * total);
     const verb = selectedOption === round.correctAnswer ? "aced a round" : "played";
-    return `I just ${verb} on CodeGuesser! Score: ${correct}/${total}. Can you beat me? https://www.codeguesser.xyz`;
+    return `I just ${verb} on CodeGuesser! Score: ${correct}/${total}. Can you beat me?`;
   }, [guessed, round, selectedOption, historyVersion, stats.roundsPlayed, stats.accuracy]);
 
   // Keyboard shortcuts
@@ -339,7 +347,7 @@ export default function Game() {
         </button>
         <button
           onClick={() => {
-            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText)}`, "_blank", "noopener,noreferrer");
+            window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(shareText + "\n" + resultUrl)}`, "_blank", "noopener,noreferrer");
           }}
           style={{
             background: "transparent",
@@ -359,7 +367,7 @@ export default function Game() {
         </button>
         <button
           onClick={() => {
-            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent("https://www.codeguesser.xyz")}`, "_blank", "noopener,noreferrer");
+            window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(resultUrl)}`, "_blank", "noopener,noreferrer");
           }}
           style={{
             background: "transparent",
