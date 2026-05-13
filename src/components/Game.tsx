@@ -407,7 +407,7 @@ export default function Game() {
 
       <footer style={{ marginTop: "auto", padding: "2rem", opacity: 0.5, fontSize: "0.8rem", textAlign: "center" }}>
         <p>Built with Next.js & GitHub API</p>
-        <p style={{ marginTop: "0.5rem" }}>
+        <p style={{ marginTop: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", flexWrap: "wrap" }}>
           <a 
             href="https://github.com/nweiler/code-guesser" 
             target="_blank" 
@@ -416,7 +416,6 @@ export default function Game() {
           >
             View on GitHub
           </a>
-          {" \u00B7 "}
           <a 
             href="https://github.com/nweiler/code-guesser/issues/new" 
             target="_blank" 
@@ -424,6 +423,19 @@ export default function Game() {
             style={{ color: "var(--foreground)", textDecoration: "none" }}
           >
             Suggest a repo
+          </a>
+          <a
+            href="https://buymeacoffee.com/nweiler"
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ display: "inline-flex", alignItems: "center" }}
+          >
+            <img
+              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+              alt="Buy Me a Coffee"
+              height="36"
+              style={{ height: "36px", width: "auto" }}
+            />
           </a>
         </p>
       </footer>
