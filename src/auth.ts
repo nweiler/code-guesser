@@ -21,13 +21,19 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       return session;
     },
     async signIn({ user, account, profile }) {
-      if (!profile?.login) return false;
+      if (!profile?.login) {
+        console.error("[auth] No profile login");
+        return false;
+      }
+
+      const githubId = Number(profile.id);
+      if (isNaN(githubId)) {
+        console.error("[auth] Invalid githubId", profile.id);
+        return false;
+      }
 
       try {
-        const githubId = Number(profile.id);
-      if (isNaN(githubId)) return false;
-
-      const existing = await db
+        const existing = await db
           .select()
           .from(users)
           .where(eq(users.githubId, githubId))
@@ -42,7 +48,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           });
         }
         return true;
-      } catch {
+      } catch (err) {
+        console.error("[auth] DB error in signIn:", err);
         return false;
       }
     },
