@@ -1,11 +1,12 @@
 import Link from "next/link";
+import { auth } from "@/auth";
 
 interface Props {
   searchParams: Promise<{ score?: string; total?: string; streak?: string }>;
 }
 
 export default async function ResultPage({ searchParams }: Props) {
-  const params = await searchParams;
+  const [params, session] = await Promise.all([searchParams, auth().catch(() => null)]);
   const score = params.score ? parseInt(params.score, 10) : null;
   const total = params.total ? parseInt(params.total, 10) : null;
   const streak = params.streak ? parseInt(params.streak, 10) : null;
@@ -49,9 +50,22 @@ export default async function ResultPage({ searchParams }: Props) {
 
       <div style={{ fontSize: "1.3rem", fontWeight: 600 }}>{badge}</div>
 
-      <Link href="/" style={{ padding: "1rem 3rem", fontSize: "1.1rem", fontWeight: "bold", background: "linear-gradient(135deg, #58a6ff, #bc8cff)", color: "white", borderRadius: "12px", textDecoration: "none", boxShadow: "0 10px 20px rgba(88, 166, 255, 0.2)" }}>
-        Play Now
-      </Link>
+      <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+        <Link href="/" style={{ padding: "1rem 3rem", fontSize: "1.1rem", fontWeight: "bold", background: "linear-gradient(135deg, #58a6ff, #bc8cff)", color: "white", borderRadius: "12px", textDecoration: "none", boxShadow: "0 10px 20px rgba(88, 166, 255, 0.2)" }}>
+          Play Now
+        </Link>
+        <Link href="/leaderboard" style={{ padding: "1rem 2rem", fontSize: "1.1rem", fontWeight: "bold", background: "transparent", border: "1px solid rgba(88,166,255,0.4)", color: "white", borderRadius: "12px", textDecoration: "none" }}>
+          Leaderboard
+        </Link>
+      </div>
+
+      {!session && (
+        <p style={{ fontSize: "0.85rem", opacity: 0.55, maxWidth: "340px" }}>
+          Sign in with GitHub on{" "}
+          <Link href="/" style={{ color: "inherit" }}>codeguesser.xyz</Link>{" "}
+          to track your streak and compete on the leaderboard.
+        </p>
+      )}
     </main>
   );
 }

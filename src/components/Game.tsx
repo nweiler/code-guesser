@@ -260,6 +260,13 @@ export default function Game() {
         }
       </p>
 
+      {stats.roundsPlayed === 0 && !loading && (
+        <div style={{ width: "100%", maxWidth: "660px", marginBottom: "1rem", padding: "0.9rem 1.2rem", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "0.88rem", opacity: 0.85, lineHeight: 1.5, textAlign: "center" }}>
+          Real open-source repos, 4 choices — pick the one that matches the code snippet. No tricks, just signal.{" "}
+          <span style={{ opacity: 0.6 }}>Try <strong>Daily</strong> for one challenge a day, or <strong>Endless</strong> to grind.</span>
+        </div>
+      )}
+
       <div className="category-pills" style={{ display: "flex", gap: "0.4rem", marginBottom: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
         {CATEGORIES.map(({ value, label }) => (
           <button
@@ -361,6 +368,18 @@ export default function Game() {
           <span style={{ fontWeight: 700, color: "var(--accent)" }}>{round.correctAnswer}</span>
           {round.description && <span style={{ opacity: 0.7 }}> &mdash; {round.description}</span>}
           {round.category && <span style={{ opacity: 0.5, marginLeft: "0.5rem" }}>({round.category})</span>}
+        </div>
+      )}
+
+      {guessed && !session && (
+        <div style={{ marginTop: "0.75rem", width: "100%", textAlign: "center", fontSize: "0.85rem", opacity: 0.65 }}>
+          <button
+            onClick={() => signIn("github")}
+            style={{ background: "none", border: "none", color: "var(--accent)", cursor: "pointer", fontSize: "inherit", padding: 0, textDecoration: "underline" }}
+          >
+            Sign in with GitHub
+          </button>{" "}
+          to save your streak and appear on the leaderboard.
         </div>
       )}
 
