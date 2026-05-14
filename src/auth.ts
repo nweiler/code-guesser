@@ -8,15 +8,25 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
   providers: [GitHub],
   session: { strategy: "jwt" },
   callbacks: {
-    async jwt({ token, user, account }) {
-      if (user) {
-        token.id = user.id;
+    async jwt({ token, account }) {
+      if (account?.providerAccountId) {
+        const githubId = Number(account.providerAccountId);
+        if (!isNaN(githubId)) {
+          const existing = await getDb()
+            .select()
+            .from(users)
+            .where(eq(users.githubId, githubId))
+            .limit(1);
+          if (existing.length > 0) {
+            token.id = String(existing[0].id);
+          }
+        }
       }
       return token;
     },
     async session({ session, token }) {
       if (session.user) {
-        session.user.id = token.id as string;
+        session.user.id = (token.id as string) ?? token.sub!;
       }
       return session;
     },
