@@ -267,8 +267,8 @@ export default function Game() {
             className="category-pill"
             onClick={() => switchCategory(value)}
             style={{
-              padding: "0.3rem 0.75rem",
-              fontSize: "0.8rem",
+              padding: "0.5rem 1rem",
+              fontSize: "0.85rem",
               fontWeight: 500,
               background: selectedCategory === value ? "var(--accent)" : "var(--card-bg)",
               color: selectedCategory === value ? "#fff" : "var(--foreground)",
