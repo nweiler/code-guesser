@@ -3,7 +3,7 @@
 import { db } from "@/db";
 import { users, rounds } from "@/db/schema";
 import { auth } from "@/auth";
-import { count, eq, and, gte, desc, sql } from "drizzle-orm";
+import { count, eq, and, gte, sql } from "drizzle-orm";
 
 export interface LeaderboardEntry {
   id: number;
@@ -25,7 +25,12 @@ interface LeaderboardFilters {
 }
 
 export async function getLeaderboard(filters: LeaderboardFilters = {}): Promise<LeaderboardResult> {
-  const session = await auth();
+  let session;
+  try {
+    session = await auth();
+  } catch (err) {
+    console.error("[leaderboard] auth() failed:", err);
+  }
 
   const conditions = [];
   if (filters.timeWindow === "today") {
@@ -39,22 +44,23 @@ export async function getLeaderboard(filters: LeaderboardFilters = {}): Promise<
 
   const where = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const entries = await db
+  const rows = await db
     .select({
       id: users.id,
       name: users.name,
       avatar: users.avatar,
       rounds: count(rounds.id),
       correct: sql<number>`SUM(CASE WHEN ${rounds.correct} THEN 1 ELSE 0 END)`,
-      accuracy: sql<number>`ROUND(SUM(CASE WHEN ${rounds.correct} THEN 1 ELSE 0 END)::numeric / COUNT(${rounds.id}) * 100, 0)`,
+      accuracy: sql<number>`ROUND(SUM(CASE WHEN ${rounds.correct} THEN 1 ELSE 0 END)::numeric / NULLIF(COUNT(${rounds.id}), 0) * 100, 0)`,
     })
     .from(users)
     .innerJoin(rounds, eq(rounds.userId, users.id))
     .where(where)
     .groupBy(users.id, users.name, users.avatar)
     .having(sql`COUNT(${rounds.id}) >= 10`)
-    .orderBy(desc(sql`accuracy`))
     .limit(100);
+
+  const entries = rows.sort((a, b) => b.accuracy - a.accuracy);
 
   let personalRank: LeaderboardResult["personalRank"] = null;
 
