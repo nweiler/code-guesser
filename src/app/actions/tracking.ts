@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/auth";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { rounds } from "@/db/schema";
 import { and, eq, gte, count } from "drizzle-orm";
 
@@ -27,8 +27,9 @@ export async function recordRound(input: RecordRoundInput) {
 
   const userId = parseInt(session.user.id, 10);
 
-  // Rate limit: check submissions in the last minute
-  const recent = await db
+  const _db = getDb();
+
+  const recent = await _db
     .select({ count: count() })
     .from(rounds)
     .where(
@@ -42,8 +43,7 @@ export async function recordRound(input: RecordRoundInput) {
     return { error: "Rate limited. Try again shortly." };
   }
 
-  // Check for exact duplicate in the last 5 seconds
-  const duplicate = await db
+  const duplicate = await _db
     .select({ id: rounds.id })
     .from(rounds)
     .where(
@@ -60,7 +60,7 @@ export async function recordRound(input: RecordRoundInput) {
     return { error: "Duplicate submission" };
   }
 
-  await db.insert(rounds).values({
+  await _db.insert(rounds).values({
     userId,
     correctRepo: input.correctRepo,
     guessedRepo: input.guessedRepo,

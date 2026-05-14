@@ -1,6 +1,6 @@
 "use server";
 
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { users, rounds } from "@/db/schema";
 import { auth } from "@/auth";
 import { count, eq, and, gte, sql } from "drizzle-orm";
@@ -44,7 +44,8 @@ export async function getLeaderboard(filters: LeaderboardFilters = {}): Promise<
 
   const where = conditions.length > 0 ? and(...conditions) : undefined;
 
-  const rows = await db
+  const _db = getDb();
+  const rows = await _db
     .select({
       id: users.id,
       name: users.name,
@@ -75,7 +76,7 @@ export async function getLeaderboard(filters: LeaderboardFilters = {}): Promise<
         accuracy: userStats.accuracy,
       };
     } else {
-      const userData = await db
+      const userData = await _db
         .select({
           rounds: count(rounds.id),
           correct: sql<number>`SUM(CASE WHEN ${rounds.correct} THEN 1 ELSE 0 END)`,

@@ -1,6 +1,6 @@
 import NextAuth from "next-auth";
 import GitHub from "next-auth/providers/github";
-import { db } from "@/db";
+import { getDb } from "@/db";
 import { users } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
@@ -33,7 +33,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       }
 
       try {
-        const existing = await db
+        const existing = await getDb()
           .select()
           .from(users)
           .where(eq(users.githubId, githubId))
@@ -41,7 +41,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
 
         if (existing.length === 0) {
           const p = profile as Record<string, string>;
-          await db.insert(users).values({
+          await getDb().insert(users).values({
             githubId,
             name: p.name || p.login || "Unknown",
             avatar: p.avatar_url || "",
