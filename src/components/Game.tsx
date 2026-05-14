@@ -176,12 +176,12 @@ export default function Game() {
     <main>
       <header style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
         <h1 style={{ margin: 0 }}>CodeGuesser</h1>
-        <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
+        <div className="header-right" style={{ gap: "0.75rem" }}>
           <Link
             href="/leaderboard"
             style={{ fontSize: "0.85rem", opacity: 0.6, textDecoration: "none", color: "var(--foreground)", whiteSpace: "nowrap" }}
           >
-            Leaderboard
+            <span className="header-mobile-hide">Leaderboard</span><span className="header-show-mobile" style={{ display: "none" }}>LB</span>
           </Link>
           {session ? (
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
@@ -192,30 +192,30 @@ export default function Game() {
                 height={24}
                 style={{ borderRadius: "50%" }}
               />
-              <span style={{ fontSize: "0.85rem", opacity: 0.7 }}>{session.user.name}</span>
+              <span className="header-mobile-hide" style={{ fontSize: "0.85rem", opacity: 0.7 }}>{session.user.name}</span>
               <button
                 onClick={() => signOut()}
                 style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", background: "transparent", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer" }}
               >
-                Sign Out
+                <span className="header-mobile-hide">Sign Out</span><span className="header-show-mobile" style={{ display: "none" }}>✕</span>
               </button>
             </div>
           ) : (
             <button
               onClick={() => signIn("github")}
-              style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", background: "var(--card-bg)", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer" }}
+              style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", background: "var(--card-bg)", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer", whiteSpace: "nowrap" }}
             >
-              Sign in with GitHub
+              <span className="header-mobile-hide">Sign in with GitHub</span><span className="header-show-mobile" style={{ display: "none" }}>Sign In</span>
             </button>
           )}
           <button
             onClick={() => setHistoryOpen(true)}
             style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
           >
-            History
+            <span className="header-mobile-hide">History</span><span className="header-show-mobile" style={{ display: "none" }}>📋</span>
           </button>
-          <div style={{ fontSize: "1.2rem", fontWeight: "bold", background: "var(--card-bg)", padding: "0.5rem 1rem", borderRadius: "8px", border: "1px solid var(--border)" }}>
-            Score: {Math.round(stats.accuracy * stats.roundsPlayed)} / {stats.roundsPlayed}
+          <div style={{ fontSize: "1.2rem", fontWeight: "bold", background: "var(--card-bg)", padding: "0.5rem 0.8rem", borderRadius: "8px", border: "1px solid var(--border)", whiteSpace: "nowrap" }}>
+            <span className="header-mobile-hide">Score: </span>{Math.round(stats.accuracy * stats.roundsPlayed)}/{stats.roundsPlayed}
           </div>
         </div>
       </header>
@@ -253,17 +253,18 @@ export default function Game() {
         </button>
       </div>
 
-      <p style={{ opacity: 0.8, marginBottom: "1rem", fontSize: "1.1rem", textAlign: "center", maxWidth: "600px" }}>
+      <p className="game-description" style={{ opacity: 0.8, marginBottom: "1rem", fontSize: "1.1rem", textAlign: "center", maxWidth: "600px" }}>
         {gameMode === "daily"
           ? "One snippet a day. Make it count."
           : <>Name that repo. We show code, you guess the project.</>
         }
       </p>
 
-      <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+      <div className="category-pills" style={{ display: "flex", gap: "0.4rem", marginBottom: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
         {CATEGORIES.map(({ value, label }) => (
           <button
             key={label}
+            className="category-pill"
             onClick={() => switchCategory(value)}
             style={{
               padding: "0.3rem 0.75rem",
@@ -450,6 +451,16 @@ export default function Game() {
         </div>
       )}
 
+      <a
+        href="https://buymeacoffee.com/nweiler"
+        target="_blank"
+        rel="noopener noreferrer"
+        className="bmc-float"
+        aria-label="Buy Me a Coffee"
+      >
+        ☕
+      </a>
+
       <footer style={{ marginTop: "auto", padding: "2rem", opacity: 0.5, fontSize: "0.8rem", textAlign: "center" }}>
         <p>Built with Next.js & GitHub API</p>
         <p style={{ marginTop: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", flexWrap: "wrap" }}>
@@ -468,19 +479,6 @@ export default function Game() {
             style={{ color: "var(--foreground)", textDecoration: "none" }}
           >
             Suggest a repo
-          </a>
-          <a
-            href="https://buymeacoffee.com/nweiler"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ display: "inline-flex", alignItems: "center" }}
-          >
-            <img
-              src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
-              alt="Buy Me a Coffee"
-              height="36"
-              style={{ height: "36px", width: "auto" }}
-            />
           </a>
         </p>
       </footer>

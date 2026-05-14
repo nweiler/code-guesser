@@ -204,6 +204,67 @@ button.incorrect {
   h1 {
     font-size: 2rem;
   }
+
+  .header-right {
+    gap: 0.4rem;
+  }
+
+  .header-mobile-hide {
+    display: none;
+  }
+
+  .game-description {
+    font-size: 0.95rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .category-pills {
+    gap: 0.3rem !important;
+    margin-bottom: 0.75rem !important;
+  }
+
+  .category-pill {
+    font-size: 0.75rem !important;
+    padding: 0.2rem 0.6rem !important;
+  }
+
+  footer {
+    padding: 1rem 0.5rem !important;
+  }
+}
+
+.header-show-mobile {
+  display: none;
+}
+
+@media (max-width: 600px) {
+  .header-show-mobile {
+    display: inline;
+  }
+}
+
+.bmc-float {
+  position: fixed;
+  bottom: 1.25rem;
+  left: 1.25rem;
+  z-index: 5;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  background: #FFDD00;
+  border: none;
+  border-radius: 50%;
+  text-decoration: none;
+  font-size: 1.3rem;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.4);
+  transition: all 0.2s ease;
+  opacity: 0.9;
+}
+.bmc-float:hover {
+  opacity: 1;
+  transform: scale(1.1);
 }
 
 /* History drawer */
