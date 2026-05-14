@@ -470,30 +470,35 @@ export default function Game() {
         </div>
       )}
 
-      <a
-        href="https://buymeacoffee.com/nweiler"
-        target="_blank"
-        rel="noopener noreferrer"
-        className="bmc-float"
-        aria-label="Buy Me a Coffee"
-      >
-        ☕
-      </a>
-
       <footer style={{ marginTop: "auto", padding: "2rem", opacity: 0.5, fontSize: "0.8rem", textAlign: "center" }}>
+        <a
+          href="https://buymeacoffee.com/nweiler"
+          target="_blank"
+          rel="noopener noreferrer"
+          style={{ display: "inline-block", marginBottom: "1rem" }}
+        >
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png"
+            alt="Buy Me A Coffee"
+            width={217}
+            height={60}
+            style={{ borderRadius: "8px" }}
+          />
+        </a>
         <p>Built with Next.js & GitHub API</p>
         <p style={{ marginTop: "0.5rem", display: "flex", alignItems: "center", justifyContent: "center", gap: "0.75rem", flexWrap: "wrap" }}>
-          <a 
-            href="https://github.com/nweiler/code-guesser" 
-            target="_blank" 
+          <a
+            href="https://github.com/nweiler/code-guesser"
+            target="_blank"
             rel="noopener noreferrer"
             style={{ color: "var(--foreground)", textDecoration: "none" }}
           >
             View on GitHub
           </a>
-          <a 
-            href="https://github.com/nweiler/code-guesser/issues/new" 
-            target="_blank" 
+          <a
+            href="https://github.com/nweiler/code-guesser/issues/new"
+            target="_blank"
             rel="noopener noreferrer"
             style={{ color: "var(--foreground)", textDecoration: "none" }}
           >
