@@ -2,6 +2,7 @@ import { Analytics } from "@vercel/analytics/react";
 import { GoogleAnalytics } from "@next/third-parties/google";
 import type { Metadata } from "next";
 import { Inter, Fira_Code } from "next/font/google";
+import Providers from "@/components/Providers";
 import "./globals.css";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
@@ -51,7 +52,9 @@ export default function RootLayout({
     <html lang="en" className={`${inter.variable} ${firaCode.variable}`}>
       <head />
       <body>
-        {children}
+        <Providers>
+          {children}
+        </Providers>
         <Analytics />
         <GoogleAnalytics gaId="G-5YDV49WMP4" />
       </body>

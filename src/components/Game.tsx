@@ -4,10 +4,13 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Prism as SyntaxHighlighter } from "react-syntax-highlighter";
 import { vscDarkPlus } from "react-syntax-highlighter/dist/esm/styles/prism";
 import { fetchNewRound } from "@/app/actions";
+import { recordRound } from "@/app/actions/tracking";
 import { GameMode, GameRound, RepoCategory } from "@/lib/types";
 import { computeStats, loadHistory, saveRound } from "@/lib/history";
 import HistoryDrawer from "@/components/HistoryDrawer";
+import { useSession, signIn, signOut } from "next-auth/react";
 import confetti from "canvas-confetti";
+import Link from "next/link";
 
 const CATEGORIES: { value: RepoCategory | null; label: string }[] = [
   { value: null, label: "All" },
@@ -32,6 +35,8 @@ export default function Game() {
   const [gameMode, setGameMode] = useState<GameMode>("endless");
   const [copied, setCopied] = useState(false);
   const [selectedCategory, setSelectedCategory] = useState<RepoCategory | null>(null);
+
+  const { data: session } = useSession();
 
   const prefetchRef = useRef<Promise<GameRound> | null>(null);
   const initRef = useRef(false);
@@ -74,6 +79,15 @@ export default function Game() {
       correct,
     });
     setHistoryVersion((v) => v + 1);
+
+    if (session) {
+      recordRound({
+        correctRepo: round.correctAnswer,
+        guessedRepo: option,
+        correct,
+        category: round.category,
+      });
+    }
 
     if (correct) {
       const s = computeStats(loadHistory()).currentStreak;
@@ -163,14 +177,37 @@ export default function Game() {
       <header style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
         <h1 style={{ margin: 0 }}>CodeGuesser</h1>
         <div style={{ display: "flex", gap: "0.75rem", alignItems: "center" }}>
-          <a
-            href="https://github.com/nweiler"
-            target="_blank"
-            rel="noopener noreferrer"
-            style={{ fontSize: "0.8rem", opacity: 0.5, textDecoration: "none", color: "var(--foreground)", whiteSpace: "nowrap" }}
+          <Link
+            href="/leaderboard"
+            style={{ fontSize: "0.85rem", opacity: 0.6, textDecoration: "none", color: "var(--foreground)", whiteSpace: "nowrap" }}
           >
-            Made by @nweiler
-          </a>
+            Leaderboard
+          </Link>
+          {session ? (
+            <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
+              <img
+                src={session.user.image || ""}
+                alt={session.user.name || ""}
+                width={24}
+                height={24}
+                style={{ borderRadius: "50%" }}
+              />
+              <span style={{ fontSize: "0.85rem", opacity: 0.7 }}>{session.user.name}</span>
+              <button
+                onClick={() => signOut()}
+                style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", background: "transparent", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer" }}
+              >
+                Sign Out
+              </button>
+            </div>
+          ) : (
+            <button
+              onClick={() => signIn("github")}
+              style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", background: "var(--card-bg)", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer" }}
+            >
+              Sign in with GitHub
+            </button>
+          )}
           <button
             onClick={() => setHistoryOpen(true)}
             style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}

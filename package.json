@@ -8,6 +8,8 @@
     "start": "next start",
     "lint": "next lint",
     "test": "vitest run",
+    "db:generate": "drizzle-kit generate",
+    "db:push": "drizzle-kit push",
     "generate-rounds": "node scripts/generate-rounds.mjs",
     "analytics": "node scripts/fetch-analytics.mjs",
     "analytics:today": "node scripts/fetch-analytics.mjs today"
@@ -17,8 +19,11 @@
     "@next/third-parties": "^16.2.6",
     "@types/react-syntax-highlighter": "^15.5.13",
     "@vercel/analytics": "^2.0.1",
+    "@vercel/postgres": "^0.10.0",
     "canvas-confetti": "^1.9.4",
+    "drizzle-orm": "^0.45.2",
     "next": "latest",
+    "next-auth": "^5.0.0-beta.31",
     "react": "latest",
     "react-dom": "latest",
     "react-syntax-highlighter": "^16.1.1"
@@ -28,6 +33,7 @@
     "@types/node": "latest",
     "@types/react": "latest",
     "@types/react-dom": "latest",
+    "drizzle-kit": "^0.31.10",
     "eslint": "latest",
     "eslint-config-next": "latest",
     "jsdom": "^29.1.1",
