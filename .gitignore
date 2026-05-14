@@ -44,3 +44,8 @@ conductor/.conductor_backup/
 # Claude Code / Superpowers session data
 .claude/
 .superpowers/
+
+# AI tool configs
+.codex/
+.opencode/
+SESSION_LOG.md

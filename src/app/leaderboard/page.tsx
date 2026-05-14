@@ -33,8 +33,8 @@ export default function LeaderboardPage() {
       const result = await getLeaderboard({ timeWindow, category });
       setEntries(result.entries);
       setPersonalRank(result.personalRank ?? null);
-    } catch {
-      setError("Failed to load leaderboard");
+    } catch (e) {
+      setError(e instanceof Error ? e.message : "Failed to load leaderboard");
     } finally {
       setLoading(false);
     }
