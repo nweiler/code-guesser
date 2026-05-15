@@ -6,8 +6,6 @@ import { auth } from "@/auth";
 import { count, eq, and, gte, sql } from "drizzle-orm";
 import type { LeaderboardEntry, LeaderboardResult } from "@/lib/leaderboard-types";
 
-export type { LeaderboardEntry, LeaderboardResult };
-
 interface LeaderboardFilters {
   timeWindow?: "all" | "today";
   category?: string | null;
