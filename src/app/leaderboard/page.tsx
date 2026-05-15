@@ -2,7 +2,8 @@
 
 import { useCallback, useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
-import { getLeaderboard, LeaderboardEntry } from "@/app/actions/leaderboard";
+import { getLeaderboard } from "@/app/actions/leaderboard";
+import type { LeaderboardEntry } from "@/lib/leaderboard-types";
 import { RepoCategory } from "@/lib/types";
 
 const CATEGORIES: { value: RepoCategory | null; label: string }[] = [

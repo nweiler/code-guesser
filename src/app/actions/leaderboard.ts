@@ -4,20 +4,9 @@ import { getDb } from "@/db";
 import { users, rounds } from "@/db/schema";
 import { auth } from "@/auth";
 import { count, eq, and, gte, sql } from "drizzle-orm";
+import type { LeaderboardEntry, LeaderboardResult } from "@/lib/leaderboard-types";
 
-export interface LeaderboardEntry {
-  id: number;
-  name: string;
-  avatar: string;
-  rounds: number;
-  correct: number;
-  accuracy: number;
-}
-
-export interface LeaderboardResult {
-  entries: LeaderboardEntry[];
-  personalRank?: { rank: number | null; rounds: number; accuracy: number } | null;
-}
+export type { LeaderboardEntry, LeaderboardResult };
 
 interface LeaderboardFilters {
   timeWindow?: "all" | "today";
