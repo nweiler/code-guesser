@@ -10,7 +10,6 @@ import { computeStats, loadHistory, saveRound } from "@/lib/history";
 import HistoryDrawer from "@/components/HistoryDrawer";
 import { useSession, signIn, signOut } from "next-auth/react";
 import confetti from "canvas-confetti";
-import Link from "next/link";
 
 const CATEGORIES: { value: RepoCategory | null; label: string }[] = [
   { value: null, label: "All" },
