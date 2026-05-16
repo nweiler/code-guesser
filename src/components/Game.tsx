@@ -246,12 +246,16 @@ export default function Game() {
         </button>
       </div>
 
-      <p className="game-description" style={{ opacity: 0.8, marginBottom: "1rem", fontSize: "1.1rem", textAlign: "center", maxWidth: "600px" }}>
-        {gameMode === "daily"
-          ? "One snippet a day. Make it count."
-          : <>Name that repo. We show code, you guess the project.</>
-        }
-      </p>
+      <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
+        <h2 style={{ margin: 0, fontSize: "1.3rem", fontWeight: 700, letterSpacing: "-0.01em" }}>
+          Can you name this repo?
+        </h2>
+        {gameMode === "daily" && (
+          <p style={{ margin: "0.25rem 0 0", fontSize: "0.85rem", opacity: 0.6 }}>
+            One snippet a day. Make it count.
+          </p>
+        )}
+      </div>
 
       {stats.roundsPlayed === 0 && !loading && (
         <div style={{ width: "100%", maxWidth: "660px", marginBottom: "1rem", padding: "0.9rem 1.2rem", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "0.88rem", opacity: 0.85, lineHeight: 1.5, textAlign: "center" }}>
