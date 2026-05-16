@@ -1,0 +1,46 @@
+[
+  {
+    "id": "2026-05-16-01",
+    "date": "2026-05-16",
+    "message": "Post-Show HN baseline - 98 weekly users",
+    "thesis": "Show HN drove ~100 visitors but only 1 user played (9 rounds). Root cause: high bounce rate — people landed, didn't understand the game or weren't compelled to try. No intervention yet. Prediction: without a change, next week's DB metrics stay flat (rounds7d < 20, users7d < 3) even if GA traffic holds.",
+    "baseline": {
+      "ga": {
+        "weeklyUsers": 98,
+        "avgDailyUsers": 20,
+        "weeklySessions": 117
+      },
+      "db": {
+        "totalRounds": 9,
+        "totalUsers": 1,
+        "accuracyAllTime": 89,
+        "rounds7d": 9,
+        "users7d": 1,
+        "accuracy7d": 89
+      }
+    },
+    "outcome": null
+  },
+  {
+    "id": "2026-05-16-02",
+    "date": "2026-05-16",
+    "message": "Bounce fix: snippet first, challenge headline",
+    "thesis": "Layout reorder puts code snippet above the fold immediately. Prediction: rounds7d moves from 9 → 30+ and users7d from 1 → 5+ within 7 days. If not, bounce is driven by content difficulty or load time, not layout.",
+    "baseline": {
+      "ga": {
+        "weeklyUsers": 100,
+        "avgDailyUsers": 20,
+        "weeklySessions": 119
+      },
+      "db": {
+        "totalRounds": 9,
+        "totalUsers": 1,
+        "accuracyAllTime": 89,
+        "rounds7d": 9,
+        "users7d": 1,
+        "accuracy7d": 89
+      }
+    },
+    "outcome": null
+  }
+]
