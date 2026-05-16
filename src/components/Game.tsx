@@ -177,12 +177,6 @@ export default function Game() {
       <header style={{ width: "100%", display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "0.5rem" }}>
         <h1 style={{ margin: 0 }}>CodeGuesser</h1>
         <div className="header-right" style={{ gap: "0.75rem" }}>
-          <Link
-            href="/leaderboard"
-            style={{ fontSize: "0.85rem", opacity: 0.6, textDecoration: "none", color: "var(--foreground)", whiteSpace: "nowrap" }}
-          >
-            <span className="header-mobile-hide">Leaderboard</span><span className="header-show-mobile" style={{ display: "none" }}>LB</span>
-          </Link>
           {session ? (
             <div style={{ display: "flex", gap: "0.5rem", alignItems: "center" }}>
               <img
@@ -203,14 +197,14 @@ export default function Game() {
           ) : (
             <button
               onClick={() => signIn("github")}
-              style={{ padding: "0.4rem 0.8rem", fontSize: "0.8rem", background: "var(--card-bg)", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer", whiteSpace: "nowrap" }}
+              style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", background: "transparent", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer", whiteSpace: "nowrap", opacity: 0.7 }}
             >
               <span className="header-mobile-hide">Sign in with GitHub</span><span className="header-show-mobile" style={{ display: "none" }}>Sign In</span>
             </button>
           )}
           <button
             onClick={() => setHistoryOpen(true)}
-            style={{ padding: "0.5rem 1rem", fontSize: "0.9rem" }}
+            style={{ padding: "0.3rem 0.6rem", fontSize: "0.75rem", background: "transparent", border: "1px solid var(--border)", color: "var(--foreground)", borderRadius: "6px", cursor: "pointer", opacity: 0.7 }}
           >
             <span className="header-mobile-hide">History</span><span className="header-show-mobile" style={{ display: "none" }}>📋</span>
           </button>
