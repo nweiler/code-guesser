@@ -213,39 +213,6 @@ export default function Game() {
         </div>
       </header>
 
-      <div style={{ display: "flex", gap: 0, marginBottom: "0.75rem", alignSelf: "flex-start" }}>
-        <button
-          onClick={() => switchMode("endless")}
-          style={{
-            padding: "0.4rem 1rem",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            background: gameMode === "endless" ? "var(--accent)" : "var(--card-bg)",
-            color: gameMode === "endless" ? "#fff" : "var(--foreground)",
-            border: "1px solid var(--border)",
-            borderRadius: "8px 0 0 8px",
-            opacity: 1,
-          }}
-        >
-          Endless
-        </button>
-        <button
-          onClick={() => switchMode("daily")}
-          style={{
-            padding: "0.4rem 1rem",
-            fontSize: "0.85rem",
-            fontWeight: 600,
-            background: gameMode === "daily" ? "var(--accent)" : "var(--card-bg)",
-            color: gameMode === "daily" ? "#fff" : "var(--foreground)",
-            border: "1px solid var(--border)",
-            borderRadius: "0 8px 8px 0",
-            opacity: 1,
-          }}
-        >
-          Daily
-        </button>
-      </div>
-
       <div style={{ textAlign: "center", marginBottom: "0.75rem" }}>
         <h2 style={{ margin: 0, fontSize: "1.3rem", fontWeight: 700, letterSpacing: "-0.01em" }}>
           Can you name this repo?
@@ -257,40 +224,9 @@ export default function Game() {
         )}
       </div>
 
-      {stats.roundsPlayed === 0 && !loading && (
-        <div style={{ width: "100%", maxWidth: "660px", marginBottom: "1rem", padding: "0.9rem 1.2rem", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "0.88rem", opacity: 0.85, lineHeight: 1.5, textAlign: "center" }}>
-          Real open-source repos, 4 choices — pick the one that matches the code snippet. No tricks, just signal.{" "}
-          <span style={{ opacity: 0.6 }}>Try <strong>Daily</strong> for one challenge a day, or <strong>Endless</strong> to grind.</span>
-        </div>
-      )}
-
-      <div className="category-pills" style={{ display: "flex", gap: "0.4rem", marginBottom: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
-        {CATEGORIES.map(({ value, label }) => (
-          <button
-            key={label}
-            className="category-pill"
-            onClick={() => switchCategory(value)}
-            style={{
-              padding: "0.5rem 1rem",
-              fontSize: "0.85rem",
-              fontWeight: 500,
-              background: selectedCategory === value ? "var(--accent)" : "var(--card-bg)",
-              color: selectedCategory === value ? "#fff" : "var(--foreground)",
-              border: "1px solid var(--border)",
-              borderRadius: "20px",
-              opacity: 0.8,
-              cursor: "pointer",
-              transition: "all 0.2s",
-            }}
-          >
-            {label}
-          </button>
-        ))}
-      </div>
-
       {gameMode === "daily" && isDailyDone && (
         <div style={{ marginBottom: "0.75rem", fontSize: "0.9rem", color: "var(--accent)", fontWeight: 600 }}>
-          Today&apos;s daily: {selectedOption === round?.correctAnswer ? "\u2705 Correct!" : "\u274C Incorrect"}
+          Today&apos;s daily: {selectedOption === round?.correctAnswer ? "✅ Correct!" : "❌ Incorrect"}
         </div>
       )}
 
@@ -457,13 +393,79 @@ export default function Game() {
             transition: "all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275)",
           }}
         >
-          {isDailyDone ? "Go Endless \u2192" : "Next Challenge \u2192"}
+          {isDailyDone ? "Go Endless →" : "Next Challenge →"}
         </button>
       </div>
 
       {milestone && (
         <div style={{ textAlign: "center", marginTop: "0.5rem", fontWeight: "bold", color: "var(--accent)" }}>
-          {"\uD83C\uDF89"} {milestone} in a row! You&apos;re crushing it!
+          {"🎉"} {milestone} in a row! You&apos;re crushing it!
+        </div>
+      )}
+
+      <hr style={{ width: "100%", border: "none", borderTop: "1px solid var(--border)", margin: "1.25rem 0 1rem" }} />
+
+      <div style={{ display: "flex", gap: 0, marginBottom: "0.75rem", alignSelf: "flex-start" }}>
+        <button
+          onClick={() => switchMode("endless")}
+          style={{
+            padding: "0.4rem 1rem",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            background: gameMode === "endless" ? "var(--accent)" : "var(--card-bg)",
+            color: gameMode === "endless" ? "#fff" : "var(--foreground)",
+            border: "1px solid var(--border)",
+            borderRadius: "8px 0 0 8px",
+            opacity: 1,
+          }}
+        >
+          Endless
+        </button>
+        <button
+          onClick={() => switchMode("daily")}
+          style={{
+            padding: "0.4rem 1rem",
+            fontSize: "0.85rem",
+            fontWeight: 600,
+            background: gameMode === "daily" ? "var(--accent)" : "var(--card-bg)",
+            color: gameMode === "daily" ? "#fff" : "var(--foreground)",
+            border: "1px solid var(--border)",
+            borderRadius: "0 8px 8px 0",
+            opacity: 1,
+          }}
+        >
+          Daily
+        </button>
+      </div>
+
+      <div className="category-pills" style={{ display: "flex", gap: "0.4rem", marginBottom: "1rem", flexWrap: "wrap", justifyContent: "center" }}>
+        {CATEGORIES.map(({ value, label }) => (
+          <button
+            key={label}
+            className="category-pill"
+            onClick={() => switchCategory(value)}
+            style={{
+              padding: "0.5rem 1rem",
+              fontSize: "0.85rem",
+              fontWeight: 500,
+              background: selectedCategory === value ? "var(--accent)" : "var(--card-bg)",
+              color: selectedCategory === value ? "#fff" : "var(--foreground)",
+              border: "1px solid var(--border)",
+              borderRadius: "20px",
+              opacity: 0.8,
+              cursor: "pointer",
+              transition: "all 0.2s",
+            }}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+
+      {stats.roundsPlayed === 0 && !loading && (
+        <div style={{ width: "100%", maxWidth: "660px", marginBottom: "1rem", padding: "0.9rem 1.2rem", background: "var(--card-bg)", border: "1px solid var(--border)", borderRadius: "10px", fontSize: "0.88rem", opacity: 0.85, lineHeight: 1.5, textAlign: "center" }}>
+          Real open-source repos, 4 choices — pick the one that matches the code snippet. No tricks, just signal.{" "}
+          <span style={{ opacity: 0.6 }}>Try <strong>Daily</strong> for one challenge a day, or <strong>Endless</strong> to grind.</span>
         </div>
       )}
 
