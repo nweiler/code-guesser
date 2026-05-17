@@ -114,7 +114,7 @@ export default function Game() {
   };
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(resultUrl);
+    navigator.clipboard.writeText(shareText + "\n" + resultUrl);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
@@ -142,12 +142,16 @@ export default function Game() {
   }, [guessed, round, stats.roundsPlayed, stats.accuracy, stats.currentStreak]);
 
   const shareText = useMemo(() => {
-    if (!guessed || !round) return "";
-    const total = stats.roundsPlayed;
-    const correct = Math.round(stats.accuracy * total);
-    const verb = selectedOption === round.correctAnswer ? "aced a round" : "played";
-    return `I just ${verb} on CodeGuesser! Score: ${correct}/${total}. Can you beat me?`;
-  }, [guessed, round, selectedOption, historyVersion, stats.roundsPlayed, stats.accuracy]);
+    if (!guessed || !round || !selectedOption) return "";
+    const isCorrect = selectedOption === round.correctAnswer;
+    const streak = stats.currentStreak;
+    const streakPart = streak >= 3 ? ` 🔥 ${streak}-game streak` : "";
+    if (isCorrect) {
+      return `✅ Recognized ${round.correctAnswer} on CodeGuesser${streakPart}. Can you?`;
+    } else {
+      return `❌ Mixed up ${round.correctAnswer} with ${selectedOption} on CodeGuesser${streakPart}. Could you tell?`;
+    }
+  }, [guessed, round, selectedOption, stats.currentStreak]);
 
   // Keyboard shortcuts
   useEffect(() => {
